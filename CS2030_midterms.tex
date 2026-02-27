@@ -1,0 +1,696 @@
+\documentclass[10pt,a4paper]{article}
+
+% --- Layout & typography (ultra-tight, 3 columns) ---
+\usepackage[margin=0mm]{geometry}
+\usepackage{multicol}
+\setlength{\columnsep}{0pt}
+\setlength{\columnseprule}{0pt}
+\pagestyle{empty}
+\setlength{\parskip}{0pt} % no vertical glue between paragraphs
+
+\usepackage{titlesec,needspace}
+\titlespacing*{\section}{0pt}{2pt plus 1pt}{1pt}
+\titlespacing*{\subsection}{0pt}{1pt}{1pt}
+
+\usepackage{enumitem}
+\setlist{leftmargin=*, itemsep=1pt, topsep=2pt, partopsep=0pt}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=black,citecolor=black,
+  pdftitle={CS1101S Cheatsheet}, pdfauthor={} }
+
+% --- Code highlighting (minted) ---
+\usepackage{minted,xcolor}
+\setminted{
+  fontsize=\scriptsize,
+  breaklines,
+  frame=single,   % frame on to visually separate sections
+  framesep=1pt,   % tight inner padding
+  linenos=false,
+  tabsize=2
+}
+% --- Narrower fonts + global 9pt body ---
+\usepackage{newtxtext}                 % narrower serif body
+\usepackage[scaled=0.92]{inconsolata}  % compact monospace for code
+\IfFileExists{microtype.sty}{\usepackage[stretch=10,shrink=10]{microtype}}{}
+\AtBeginDocument{\fontsize{6}{10.5}\selectfont}  % 9pt body (10.5pt leading)
+
+% Zero vertical gap around minted blocks
+\linespread{0.80}
+% Remove vertical list glue around minted blocks
+\usepackage{etoolbox}
+\AtBeginEnvironment{minted}{%
+  \setlength{\parskip}{0pt}%
+  \setlength{\topsep}{0pt}%
+  \setlength{\partopsep}{0pt}%
+  \setlength{\parsep}{0pt}%
+  \vspace{-2pt}%
+}
+
+\AtEndEnvironment{minted}{\vspace{-2pt}}
+
+% --- Document ---
+\begin{document}\footnotesize
+
+\begin{multicols*}{3}
+\raggedcolumns
+
+% ===================== 1) Variables =====================
+\begin{minted}{javascript}
+//T is a subtype of S, T<:S
+  //variables of type T can be used on code written for type S
+//widening conversion
+  //primitives: type with smaller range to a type with larger range
+  //reference types: more specific type to more general type
+//narrowing conversion
+  //java does not allow narrowing unless explicitly casted
+//byte <: short <: int <: long <: float <: double
+//char <: int <: long <: float <: double
+\end{minted}
+% ===================== 2) Functions =====================
+\begin{minted}{javascript}
+return_type function_name(type1 param1, type2 param2){...}
+//if does not return anything, use void
+\end{minted}
+% ===================== 3) Encapsulation =====================
+\begin{minted}{javascript}
+//Encapsulation: keeping objects data and code that works on data together, hiding internal details from other code
+  //other code interacts with class through methods
+  //should not directly mess with objects fields
+//objects of a given class called instance of a class
+//when created, class fields assigned default values
+  //whole numbers assigned 0, real numbers 0.0, boolean false, char \u0000, object reference null
+//aliasing: 2 reference variables can share the same value
+//accessing null fields and methods cause NullPointerException
+\end{minted}
+% ===================== 4) Private and Public =====================
+\begin{minted}{javascript}
+//private only access within class, public can access/modify outside class
+\end{minted}
+% ===================== 5) Constructors =====================
+\begin{minted}{javascript}
+//Constructors invoked automatically when instantiated, MUST have same name as class, NO return type
+  //runs when new is used
+//this keyword
+  //reference variable that refers back to the calling object itself
+//if no constructor given, default constructor will automatically be added at CT
+  Circle(){}
+\end{minted}
+% ===================== 6) Accessors and Mutators =====================
+\begin{minted}{javascript}
+//tell, dont ask principle
+  //tell an object what you want done, instead of asking for its data and doing the work yourself
+\end{minted}
+% ===================== 7) Class Fields =====================
+\begin{minted}{javascript}
+class Math {
+  public static final double PI = 3.14159;
+}
+//static keyword: associate field with class in java
+//only 1 shared copy available, can be accessed by any instance
+//can also be accessed with className
+//final keyword: does not allow the value of the field to be changed
+  //final instance field must be assigned value by the end constructor else compile error
+//use public static final for constant values
+\end{minted}
+% ===================== 8) Class Methods =====================
+\begin{minted}{javascript}
+//static method: does not depend on any particular object instance
+class Circle{
+  public static int getCircleCount() {...}
+}
+//CANNOT use instance fields in static method
+  //can use class fields in instance method
+public static final void main(String[] args) {...}
+\end{minted}
+% ===================== 9) Composition =====================
+\begin{minted}{javascript}
+//Composition (has-a relationship)
+  //just storing an object in class
+\end{minted}
+% ===================== 10) Heap and Stack =====================
+\begin{minted}{javascript}
+//Stack: local variables and stack frames
+  //instance and class fields are NOT variables
+  //call frames are created when method is invoked and removed when method completes
+  //LIFO (last element inserted is first to be removed)
+//Heap: stores all objects
+  //whenever new keyword is used
+
+
+
+//during instance method call, JVM will create a stack frame
+  //it contains *this* reference, method arguements and local variables within method
+//if class method called, no *this* reference
+\end{minted}
+% ===================== 11) Inheritence =====================
+\begin{minted}{javascript}
+class ColoredCircle extends Circle {
+  private Color color;
+  public ColoredCircle(Point center, double radius, Color color) {
+    super(center, radius);  // call the parent's constructor
+    this.color = color;
+  }} //ColouredCircle <: Circle
+//all public fields and methods in parent will be in child, including public class fields/methods
+//NO private fields
+//if constructor does not invoke the superclass constructor, compiler will insert default constructor
+  //if superclass has constructor and not called, CT error
+Circle c = new ColoredCircle(p, 0, blue); //widening type conversion
+ColoredCircle cc = c; //compile error, compiler treats c as Circle, dk that its RTT is ColouredCircle
+ColoredCircle cc = (ColoredCircle) c; // narrowing type conversion
+  //compiler treats c as if it has CTT ColouredCircle
+  //if wrong, ClassCastException at RT
+//ALL classes inherit from the Object class
+  //boolean Object::equals(Object)
+  //String Object::toString()
+//if child extends Parent, you can call inherited static method using the child className too
+\end{minted}
+% ===================== 12) Overriding =====================
+\begin{minted}{javascript}
+//method signature: name, type, order and number of parameters
+  class C {
+    A foo(B1 x, B2 y) {...}} // C::foo(B1, B2)
+//method descriptor: method signature + return type
+  //A C::foo(B1, B2)
+//overriding: must have same method descriptor as instance method in parent class
+  //return type may be a subtype of the og return type
+  //parameters MUST be exactly the same
+  //dc about parameter names
+  //CANNOT override class method
+class ColouredCircle() {
+  ...
+  @Override
+  public String toString() {...}
+}
+@Override
+  //hint to compiler that method is intended to override method in parent class
+  //if type or overriding not possible, compiler will lyk by throwing error
+//toString method, String Object::toString()
+  //converts a reference object to String object
+  //called automatically during string concatenation using the + operator
+  String s = "Circle c is" + c; //Circle c is Circle@1ce92674
+  //can override toString method, so it returns different string, will still be called automatically
+\end{minted}
+% ===================== 13) Overloading =====================
+\begin{minted}{javascript}
+//Overloading: class has access (defined or inherited) to 2 or more methods with SAME name but different method signatures
+  //either order, number or type of parameters different, dc about names
+  //if only difference is names or no difference at all between 2 methods, compile error
+  //return type can be different, CANNOT differ only by return type
+class Circle {
+  public boolean contains(Point p) {...}
+  public boolean contains(Point p, double y){...}
+}
+//constructor can also be overloaded
+  class Circle {
+    public Circle(Point c, double r) {...}
+    public Circle() { this(new Point(0, 0), 1); }
+  }  //one constructor can call another constructor in the same class
+//CAN overload static class methods
+  //can also overload inherited public class methods
+\end{minted}
+% ===================== 14) Polymorphism =====================
+\begin{minted}{javascript}
+//Polymorphism: change how existing code behaves without changing any existing code
+  //achieved through method overriding
+//overriding equals method
+class Circle {
+  ...
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof Circle) {
+      Circle circle = (Circle) obj;
+      return (circle.c.equals(this.c) && circle.r == this.r);
+    }
+    return false;
+  }} //== DOES NOT call equals method in java
+//obj instanceof operator
+  //check if runtime type of obj is a subtype of Circle, obj<:Circle
+\end{minted}
+% ===================== 15) Method invocation =====================
+\begin{minted}{javascript}
+//dynamic binding
+boolean same = curr.equals(obj)
+//method signature being called (decided at CT)
+  //1. determine the CTT of curr
+  //2. compiler search for all methods in curr (defined and inherited) that can be correctly invoked with arguement type
+    //also searches widening references (subtype to supertype) or primitives (int to double)
+  //3. if more than 1 method, choose most specific one based on arguements
+  //4. if fails to determine a single most specific method, throw compile error
+  //5. compiler stores method descriptor in bytecode
+  //CT chooses the most specific applicable overload
+//class that provides the implementation (decided at RT)
+  //1. method descriptor from CT is retrieved
+  //2. determine the RTT of curr, let it be T
+  //3. starting from T, select nearest method implementation with matching method descriptor in class hierachy until it reaches root Object
+//ONLY applies to instance methods, class methods DO NOT support dynamic binding
+  //CT part is the same, then java will invoke the method defined in CTT of target, ignores the RTT
+\end{minted}
+% ===================== 16) Liskov substitution principle (LSP) =====================
+\begin{minted}{javascript}
+//Liskov substitution principle (LSP): subclass should not break expectations set by superclass
+  //subclass should be able to pass all test cases of superclass, else not substitutable and LSP violated
+//even though S<:T, code meant for T will not always work on S
+  //S might override some methods from T, and output from those methods might be different even though return type is the same
+//final keyword: prevent class or method from being inherited
+  final class Circle {...}
+  //or can allow inheritence but prevent a specific method from being overriden
+  class Circle { public final boolean contains(Point p) {...} }
+//final keyword can also be used when declaring local variables to prevent it from being reassigned within method body
+\end{minted}
+% ===================== 17) Abstract class =====================
+\begin{minted}{javascript}
+//Abstract class (is-a relationship)
+  //class that cannot be instantiated, usually represents an abstract concept
+  //if instantiated, will produce an error
+abstract class GraphicObject {
+  public int x;
+  public int y;
+  GraphicObject(int x, int y) {
+      this.x = x;
+      this.y = y;
+  }  // A constructor - child classes will call this
+  void moveTo(int newX, int newY) {
+      this.x = newX;
+      this.y = newY;
+      System.out.println("Moved to coordinates: " + x + "," + y);
+  }  // Concrete method: Every shape moves the same way
+  abstract String draw(int x);   // Abstract methods
+  abstract void resize(); //no method body
+}
+class Circle extends GraphicObject {
+  Circle(int x, int y) {
+      super(x, y); // Calls the GraphicObject constructor
+  }
+  @Override
+  String draw(int level) {
+      System.out.println("Drawing a circle at " + x + "," + y);
+  } //must have same param and return type
+  @Override
+  void resize() {
+      System.out.println("Resizing the circle.");
+  }
+} //Circle is-a GraphicObject relationship
+//subclass either implement ALL abstract methods or be declared abstract as well
+  //class that inherits must implement ALL abstract methods in parent and grandparent
+//NOT all methods have to be abstract, can have no abstract method
+//class with 1 abstract method MUST be declared abstract
+//can contain class methods, call with className
+//CANNOT have private abstract and final abstract methods, compile error
+//concrete class: non-abstract class
+\end{minted}
+% ===================== 18) Interface =====================
+\begin{minted}{javascript}
+//Interface (can-do relationship)
+  //models what an entity can do, name usually ends with -able suffix
+interface GetAreable {
+  double getArea();
+} //all methods in interface declared public abstract by default
+class Flat extends RealEstate implements GetAreable {
+  private int numOfRooms;
+  @Override
+  public double getArea() {...}
+}
+//concrete class MUST override ALL abstract methods from interface and provide implementation to each
+//abstract class dont need, but child that inherits abstract class needs
+class SmartPhone implements Camera, Phone, WebBrowser {...}
+//can also extend from 1 or more interfaces
+  //interface cannot inherit from class
+//interface acts as a supertype
+  //if class C implements interface I, C<:I
+interface I { ... }
+class A { ... }
+class B implements I { ... }
+A a;
+B b;
+(I) b; //will compile since B <: I
+(I) a; //will also compile although wrong
+//will compile as there is a possibility that a actually has a RTT of its subclass which implements from I
+  //will fail during RT but will compile
+class AI extends A implements I{ ... }
+A a = new AI(); // AI extends A and implements I
+I i = (I) a;    // this would be safe
+//if it is final class A, java knows that it definitely does not have a subclass that implements I, compile error
+  //ALL non-final classes can be cast to an interface and it will compile
+//impure interfaces: more methods are added to interface, all existing classes will NOT compile unless updated
+interface GetAreable {
+  double getArea();
+  default double getAreaInSquareFeet() { //can include default method
+    return getArea() * 10.7639;
+  }
+} //classes will automatically inherit these methods unless they choose to override them
+//can have static methods, call with interface name, no override
+//can have private methods, only callable within interface
+//ALL variables in interface public static final only, constants
+//NO constructors
+\end{minted}
+% ===================== 19) Wrapper class =====================
+\begin{minted}{javascript}
+//Wrapper class: class version of a primitive type
+//java provides a wrapper for each of its primitive types
+  //Integer for int, Double for double and so on
+//reference types
+Integer b = Integer.valueOf(5);
+Integer x = new Integer(5);  //use is discouraged
+int j = b.intValue(); //use this to access the value
+//auto boxing and unboxing
+Integer a = 5; //autoboxing: int -> Integer
+int j = i; //unboxing: Integer -> int
+//unboxing can throw NullPointerException if object is null
+//less efficient that primitive types
+Double sum = 0.0;
+for (int i = 0; i < Integer.MAX_VALUE; i++) {
+  sum += i;
+}
+//wrapper objects are immutable, everytime the the value is updated, a new Double object is created
+//should always use equals method when comparing wrapper objects, override so it compares the values not reference type
+  //using == will just compare reference
+Double d = 4 //compile error
+//cannot simultaneously widen int to Double and autobox double to Double
+  //can widen then box or box then widen
+\end{minted}
+% ===================== 20) Runtime class mismatch =====================
+\begin{minted}{javascript}
+
+\end{minted}
+% ===================== 21) Variance =====================
+\begin{minted}{javascript}
+//variance of types
+//refers to how the subtype relationship between complex types relates to the subtype relationship between components
+//covariant if S<:T implies C(S) <: C(T)
+//contravariant if S<:T implies C(T) <: C(s)
+//invariant if its not covariant or contravariant
+//arrays are covariant
+  //S<:T, then S[]<:T[]
+Integer[] intArray = new Integer[2] { Integer.valueOf(10), Integer.valueOf(20) };
+Object[] objArray;
+objArray = intArray;
+objArray[0] = "Hello!"; // compiles but RT error
+//compiler will allow you to put String into objArray since CT Object and String<:Object but it will have RT of Integer[]
+\end{minted}
+% ===================== 22) Exceptions =====================
+\begin{minted}{javascript}
+try { ... }
+catch (FileNotFoundException e) { ... }
+catch (InputMismatchException e) { ... }
+catch (NoSuchElementException e) { ... }
+finally { ... }
+//exceptions are instances that are a subtype of the Exception class
+//try blocks: runs first, stops running once exception is thrown
+//catch blocks are checked in order
+  //first catch block that has an execution type compatible with the type of the thrown exception (type or subtype) will be selected
+  //if ExceptionX <: ExceptionY
+  catch(ExceptionY e) { ... } 
+  catch(ExceptionX e) { ... }
+  //will throw compile error as exception would already be caught on ExceptionY, ExceptionX is redundant
+//finally block (optional): runs after all the try and catch blocks, usually for cleanup tasks, ALWAYS RUNS
+class Circle {
+  ... //have to declare that function throws exception with *throws* keyword
+  public Circle(Point c, double r) throws IllegalArgumentException {
+    if (r < 0) {
+      throw new IllegalArgumentException("radius cannot be negative.");
+    } //create Exception object and throw it to caller with *throw* keyword
+    ...
+  }
+} //throw causes the method to return immediately
+//unchecked exceptions: caused by programmers errors, subclass of RuntimeException, cause runtime errors
+  //RuntimeException is subclass of Exception
+//checked exceptions: errors that programmer has no control over, subclass of Exception
+class Main {
+  static FileReader openFile(String filename) { return new FileReader(filename); }
+  public static void main(String[] args) { openFile(); }
+} //wont compile cause FileNotFoundException is not handled
+//checked exceptions are enforced by compiler
+  //if method can throw it, must either declare it with throws or catch it inside the method
+  //callers must either catch or declare it too
+class Main {
+  static FileReader openFile(String filename) {
+    try { return new FileReader(filename);} 
+    catch (FileNotFoundException e) {
+      System.err.println("Unable to open " + filename + " " + e); //calls e.toString()
+      return null; //must still return something even though theres an error
+    } //if block threw exception, then dont need return anything
+  } //since block catches exception, must return something of type FileReader or null
+  public static void main(String[] args) { openFile(); }
+}
+//unchecked exceptions do not need to be declared in throws
+  //exception can still happen at runtime but caller is not forced to catch it and no compile error if its ignored
+  //code can compile but if theres error will still have a RT error
+//Passing the buck: the caller of the method that generates an exception does not need to catch it, can pass it to caller
+class Main {
+  static FileReader openFile(String filename) throws FileNotFoundException { return new FileReader(filename); }
+  public static void main(String[] args) {
+    try { openFile(); } 
+    catch (FileNotFoundException e) { ... }
+  }
+}
+//creating exceptions: inherit from existing exceptions
+class IllegalCircleException extends IllegalArgumentException {
+  Point center;
+  //overloaded the constructor, if this is called center is null
+  IllegalCircleException(String message) { super(message); }
+  IllegalCircleException(Point c, String message) { ... }
+  @Override
+  public String toString() { ... } //this will run when trying to get error string
+}
+//changing the set of checked exceptions that a method throws is a change to its public specifications
+  //may require changing its callers
+  //overriden methods are only allowed to throw the same or more specific (subtype) exceptions
+  //overriden method can also throw nothing, makes the method easier to call
+    //code that handles exception will still compile and run, just that it catches nothing
+  //NOT allowed to throw new or broader checked exceptions
+//unchecked exceptions, even if superclass method throws unchecked exception
+  //in override can throw nothing or a different exception
+  //dont have to delcare that you are throwing an unchecked exception with the throws keyword
+    //can still throw unchecked exception in code and still cause code to immediately return
+//the Error class: when program should terminate when there is no way to recover from error
+  //when heap or stack is full
+//Exception and Error are subclasses of class Throwable, only objects of this class can be thrown and caught by catch blocks
+\end{minted}
+% ===================== 23) Generics =====================
+\begin{minted}{javascript}
+//generic types: class or interface that is parameterised by 1 or more type parameters
+//type parameter: what is declared in < >
+//type variable: the placeholder for type, declared in definition of generic class or method, S or T in examples
+//type arguement: concrete type or type variable passed to a generic type or method when instantiated
+//parameterized type: instantiated generic type
+class Pair<S,T> { //use single capital letter to name each type variable
+  private S first;
+  private T second;
+  public Pair(S first, T second) {
+    this.first = first;
+    this.second = second;
+  }
+  public S getFirst() { return this.first; }
+  public T getSecond() { return this.second; }
+}
+//using a generic type, have to pass in type arguements
+  //type arguements can be non-generic type, generic type or another type parameter that has been declared (type variable), ONLY reference types
+Pair<String,Integer> foo() { return new Pair<String,Integer>("hello", 4); }
+Pair<String,Integer> p = foo();
+Integer i = (Integer) p.getFirst(); // compile-time error
+  //compiler knows that getFirst is bound to a String, can throw a compile error
+class DictEntry<T> extends Pair<String,T> { ... } //pass type parameter of a generic type to another generic type
+  //if DictEntry<Integer> it will inherit all accessible instance methods and fields from Pair<String, Integer>
+class A {
+  public static <T> boolean contains(T[] array, T obj) { ... }
+} //generic methods
+String[] strArray = new String[] { "hello", "world" };
+A.<String>contains(strArray, 123); //compile error
+//Bounded type parameters
+class A {
+  public static <T extends GetAreable> T findLargest(T[] array) {
+    for (T curr : array) {
+      double area = curr.getArea();
+      ...
+    } //says that T must be a subtype of GetAreable
+    ...
+  } //used for both class and interface
+} // have to do this as this guarantees that T is able to use the getArea() function, else compile error
+//using bounded type parameters for declaring generic classes
+class Pair<S extends Comparable<S>,T> implements Comparable<Pair<S,T>> {
+  ... //generic interface Comparable<T>
+  public Pair(S first, T second) {
+    this.first = first;
+    this.second = second;
+  } //contains method int compareTo(T t) for any concrete class that implements the interface 
+  @Override
+  public int compareTo(Pair<S,T> s1) {
+    return this.first.compareTo(s1.first);
+  } //S extends Comparable<S>, self referential bound, comparable to itself
+} //implements Comparable<Pair<S,T>>, so compareTo() takes in Pair<S,T> and can be properly overriden
+//Pair<String, Integer> is considered a concrete type as it is no longer generic
+\end{minted}
+% ===================== 24) Type Erasure =====================
+\begin{minted}{javascript}
+//type erasure: erases type parameters and type arguements during compilation after type checking
+//erases the types and replaces it with Object
+//cast conversions will be inserted at use sites, when you return something of type T basically
+Integer i = new Pair<String,Integer>("hello", 4).getSecond(); //will become
+Integer i = (Integer) new Pair("hello", 4).getSecond();
+//generated by compiler after type checking, after casting is proven to be correct, 0 chance of exceptions
+//if parameter is bounded, it is replaced by the bounds
+  //If T extends GetAreable, then T is replaced with GetAreable
+class A {
+  void foo(Pair<Sring, String> p) { ... }
+  void foo(Pair<Integer, Integer> p) { ... }
+}
+//CANNOT overload when the only difference between the arguements is the type arguements, compile error
+  //after type erasure, Pair<...> p will be changed to Pair p, duplicate methods
+//CANNOT used class type variables in static field and method
+  //static fields/methods share by all instances by type variable belongs to an instance and different instances have different type variables
+class D<T> { //static methods must announce its own independent type parameter
+  public static <T> T foo(T x) { ... }
+} //the type variable T for foo is different from the type variable T for class D
+String result = D.<String>foo("Hello World"); //call it normally
+//generics and arrays CANNOT mix
+  //after type erasure, the array will allow all the generic types to adjust the array
+  //will cause heap pollutions where a different parameterized type is placed into the array
+  //instantiating a genric array, new Pair<String, Integer>[10] will cause compile error
+//generic array declaration, T[] with nothing assigned to it is allowed
+//type checking -> type erasure -> dynamic binding
+//bridge method: type erasure will affect inheritence and method overriding if they interact with generics
+  //bridge methods will be generated to maintain polymorphism
+class Box<T> { void get(T t) { ... } }
+class StringBox extends Box<String> {
+  @Override
+  void get(String s) { ... }
+} //after type erasure, compiler will see Box::get(Object), different method description, breaking polymorphism
+//bridging method generated when
+  //class is a subtype of a parameterized type and type erasure changes the signature of any inherited method
+class StringBox extends Box {
+  void get(Object s) { return get((String) s); }
+  void get(String s) { return "hello"; }
+}
+Box<String> b = new StringBox();
+b.get("hi");
+//after type erasure, will be get(Object), during CT, compiler searches for closest method signature to get(String) in Box, save get(Object)
+//during RT, StringBox will call get(Object), if no bridging method it wont be able to call anything, thus the bridging method
+\end{minted}
+% ===================== 25) Unchecked Warnings =====================
+\begin{minted}{javascript}
+ArrayList<Pair<String,Integer>> pairList;
+pairList = new ArrayList<Pair<String,Integer>>(); // ok
+pairList.add(0, new Pair<Double,Boolean>(3.14, true));  // error
+ArrayList<Object> objList = pairList;  // error
+//when parameterized, ensures type safety by checking for appropriate types during CT
+//generics are invariant, no subtyping relationship between ArrayList<Object> and ArrayList<Pair<...>>
+//no possibility of heap pollution
+class Seq<T> {
+  private T[] array;
+//not allowed to assign Object[] to T[] without casting, thus (T[])
+  public Seq(int size) {
+//SuppressWarnings cannot apply to an assignment, only declaration
+    @SuppressWarnings("unchecked") //also write comment to explain how its safe to use this
+    T[] a = (T[]) new Object[size];
+    this.array = a; //declare local variable then assign to array
+  } //tells the compiler everything is fine, no need warning
+  public void set(int index, T item) {
+    this.array[index] = item;
+  } //compiler will check type, if anybody
+  public T get(int index) {
+    return this.array[index];
+  }
+  // public T[] getArray() {
+  //   return this.array;
+  // }
+} //remove getArray method as people can put stuff into the array from outside
+//unchecked warnings: compiler saying it has done what it can but because of type erasure there could be RT error that it cannot prevent
+//T[] is Object[] that was casted to become T[], takes in any reference type outside, which is allowed at RT, heap pollution
+  Seq<Integer> si = new Seq<>(1);
+  Integer[] ints = si.getArray();
+  Object[] o = ints; //allowed, Integer[] <: Object[]
+  o[0] = "boom"; //allowed at RT since o actually Object[]
+//during type checking compiler will still treat this.array as if it has type of T[]
+Seq<Integer> si = new Seq<>(10);
+String[] s = si.getArray(); //compile error, compiler sees getArray return Integer[]
+//if getArray is removed, only way to place item in array is through set method, which must have type T, array guaranteed to be type T
+  //during type checking, if set function called with wrong type T, compile error
+//Raw types: generic class without <>
+void populateSeq(Seq s) {
+  s.set(0, 1234);
+  s.set("h","e");
+}  //can put any type into the class, compiler will not check, NOT allowed in new code
+//only allowed to use when checking object type at RT, obj instanceof Seq
+\end{minted}
+% ===================== 26) Wildcards =====================
+\begin{minted}{javascript}
+//NO subtyping relationship in generics, Seq<Circle> NOT a subtype of Seq<Shape>, CT error
+//there is subtyping relationship in type variables though
+//Upper bound wildcard, Seq<? extends T>
+public void copyFrom(Seq<? extends T> src) {
+  int len = Math.min(this.array.length, src.array.length);
+  for (int i = 0; i < len; i++) {
+    this.set(i, src.get(i));
+  }
+}  //generic type, dk exact type but promise its either T or subclass of T
+//S<:T, then A<? extends S> <: A<? extends T> (covariance)
+  //A which contains either S or subclass of S is A which contains either T or subclass of T
+//For any type S, A<S> <: A<? extends S>
+  //A<S> is a subclass of A<S and all its subclasses>
+//subtype relation between wildcard types different than normal
+  //no longer all code of superclass will also work on subclass
+  //more like all subtypes of A<? extends S> is subtype of A<? extends T>
+//transitive: A<S> <: A<? extends T>
+//if method takes in Seq<? extends T>, get must be assigned to T and set must be null if udk whats inside
+//wildcard NOT a type variable, only used in method parameters, foo(<? extends Apple> a)
+  //function can return Apple or any of its supertypes
+//Lower bounded wildcard, Seq<? super T>
+//S<:T, then A<? super T> <: A<? super S> (contravariance)
+public void copyTo(Seq<? super T> dest) {
+  int len = Math.min(this.array.length, dest.array.length);
+  for (int i = 0; i < len; i++) {
+      dest.set(i, this.get(i));
+  }
+} //A that contains T or supertype of T is a subtype of A which contains S or supertype of S
+//For any type S, A<S> <: A<? super S>
+  //A<S> is a subclass of A<S and all its supertypes>
+//transitive: A<T> <: A<? extends S>
+//if method takes in Seq<? super S>, get must be assigned to Object and set must be S if udk whats inside
+//Producer Extends; Consumer Super (PECS)
+  //Producer, ? extends T, can safely get T out
+  //Consumer, ? super T, can safely put T into it
+//Unbounded wildcards, Seq<?>
+void foo(Seq<?> seq) {
+  x = seq.get(0);
+  seq.set(0, y);
+} //method will be flexible to take in a Seq of any type
+//restrictive, x MUST be Object and y has to be null as Seq can be any type
+//Generics are INVARIANT
+Seq<Object> a1 = new Seq<String>(0); 
+Seq<Object> a2 = new Seq<Integer>(0); //compile error
+Seq<?> a1 = new Seq<String>(0); // Does compile
+Seq<?> a2 = new Seq<Integer>(0); // Does compile
+//Seq<?> is a sequence of object of some specific but unknown type
+//Seq<Object> is a sequence of Object instances with type checking by the compiler
+//Seq is a sequence of Object instances without type checking
+a instanceof Seq<?> //replace raw types with this
+List<?>[] a = new List<?>[10]; //compiles
+Comparable<?>[] b = new Comparable<?>[10]; //compiles
+//A<?> is a refiable type as no type information is lost during type erasure, thus can create arrays
+  //creates an array of A[], can store any A object in it
+\end{minted}
+% ===================== 27) Type Inference =====================
+\begin{minted}{javascript}
+Pair<String,Integer> p = new Pair<>();
+//java infers that p should be instance of Pair<String, Integer> based on CTT of p
+public static <S> boolean contains(Seq<? extends S> seq, S obj) { ... }
+A.contains(circleSeq, shape) //can call like non-generic method
+//Rules for type inferencing
+  //S -> T: S <: T <: Object
+  //S -> ? extends T: S <: T <: Object
+  //S -> ? super T: T <: S, arguement typing
+  //T extends S: T <: S
+  //return type T and assignment type S, target typing, T <: S
+//ALWAYS choose the lowest bound that everything has in common
+//when multiple types satisfy constraints, java choose the most general one that satisfies all bounds
+public static <T> boolean contains(T[] array, T obj){}
+String[] strArray = new String[] { "hello", "world" }; //String<:T<:Object
+A.contains(strArray, 123); // Integer<:T<:Object
+//T<:Object satisfies all bounds, will compile but runtime error
+public <T extends Circle> T foo(Seq<? extends T> seq)
+ColoredCircle c = foo(new Seq<GetAreable>());
+//T<:ColouredCircle, T<:Circle, GetAreable<:T<:Object, no solution, compile error
+\end{minted}
+\end{multicols*}
+\end{document}
